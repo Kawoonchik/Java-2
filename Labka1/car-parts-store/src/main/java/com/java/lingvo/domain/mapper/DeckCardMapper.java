@@ -7,9 +7,8 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface DeckCardMapper {
-
-    @Mapping(target = "productId", source = "product.id")
-    @Mapping(target = "productName", source = "product.name")
-    @Mapping(target = "lineTotal", expression = "java(orderItem.lineTotal())")
+    @Mapping(source = "card.id", target = "cardId")
+    @Mapping(source = "card.term", target = "term")
+    @Mapping(source = "card.translation", target = "translation")
     DeckCardResponse toResponse(DeckCard deckCard);
 }

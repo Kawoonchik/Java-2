@@ -12,12 +12,10 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CardResponse {
-    private Integer id;
-    private String sku;
-    private String name;
-    private String category;
-    private String manufacturer;
-    private String compatibleModel;
-    private BigDecimal price;
-    private int stock;
+    private Long id;
+    private String term;
+    private String translation;
+    private String exampleSentence;
+    private String language;
 }
+

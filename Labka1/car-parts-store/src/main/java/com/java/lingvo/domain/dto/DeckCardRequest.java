@@ -14,8 +14,5 @@ import lombok.Setter;
 public class DeckCardRequest {
 
     @NotNull
-    private Integer productId;
-
-    @Min(1)
-    private int quantity;
+    private Long cardId;
 }

@@ -1,8 +1,8 @@
 package com.java.lingvo.service;
 
 import com.java.lingvo.domain.dto.CardCreateRequest;
-import com.java.lingvo.domain.dto.CardUpdateRequest;
 import com.java.lingvo.domain.dto.CardResponse;
+import com.java.lingvo.domain.dto.CardUpdateRequest;
 import com.java.lingvo.domain.mapper.CardMapper;
 import com.java.lingvo.domain.model.Card;
 import com.java.lingvo.exception.CardNotFoundException;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,41 +21,38 @@ public class CardService {
     private final CardRepository cardRepository;
     private final CardMapper cardMapper;
 
-    @Transactional(readOnly = true)
-    public List<CardResponse> listAll() {
+    @Transactional
+    public CardResponse createCard(CardCreateRequest request) {
+        Card card = cardMapper.toEntity(request);
+        Card savedCard = cardRepository.save(card);
+        return cardMapper.toResponse(savedCard);
+    }
+
+    public CardResponse getCard(Long id) {
+        Card card = cardRepository.findById(id)
+                .orElseThrow(() -> new CardNotFoundException(id));
+        return cardMapper.toResponse(card);
+    }
+
+    public List<CardResponse> getAllCards() {
         return cardRepository.findAll().stream()
                 .map(cardMapper::toResponse)
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
-    public CardResponse getById(Integer id) {
-        return cardMapper.toResponse(findOrThrow(id));
+                .collect(Collectors.toList());
     }
 
     @Transactional
-    public CardResponse create(CardCreateRequest request) {
-        Card card = cardMapper.toEntity(request);
+    public CardResponse updateCard(Long id, CardUpdateRequest request) {
+        Card card = cardRepository.findById(id)
+                .orElseThrow(() -> new CardNotFoundException(id));
+        cardMapper.updateEntityFromDto(request, card);
         return cardMapper.toResponse(cardRepository.save(card));
     }
 
     @Transactional
-    public CardResponse update(Integer id, CardUpdateRequest request) {
-        Card card = findOrThrow(id);
-        cardMapper.updateEntityFromRequest(request, card);
-        return cardMapper.toResponse(cardRepository.save(card));
-    }
-
-    @Transactional
-    public void delete(Integer id) {
+    public void deleteCard(Long id) {
         if (!cardRepository.existsById(id)) {
             throw new CardNotFoundException(id);
         }
         cardRepository.deleteById(id);
-    }
-
-    private Card findOrThrow(Integer id) {
-        return cardRepository.findById(id)
-                .orElseThrow(() -> new CardNotFoundException(id));
     }
 }

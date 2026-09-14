@@ -18,23 +18,14 @@ import java.math.BigDecimal;
 public class CardCreateRequest {
 
     @NotBlank
-    private String sku;
+    private String term;
 
     @NotBlank
-    private String name;
+    private String translation;
+
+    private String exampleSentence;
 
     @NotBlank
-    private String category;
+    private String language;
 
-    @NotBlank
-    private String manufacturer;
-
-    private String compatibleModel;
-
-    @NotNull
-    @DecimalMin(value = "0.0", inclusive = false)
-    private BigDecimal price;
-
-    @Min(0)
-    private int stock;
 }

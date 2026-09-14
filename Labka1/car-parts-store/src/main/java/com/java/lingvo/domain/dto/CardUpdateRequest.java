@@ -18,20 +18,13 @@ import java.math.BigDecimal;
 public class CardUpdateRequest {
 
     @NotBlank
-    private String name;
+    private String term;
 
     @NotBlank
-    private String category;
+    private String translation;
+
+    private String exampleSentence;
 
     @NotBlank
-    private String manufacturer;
-
-    private String compatibleModel;
-
-    @NotNull
-    @DecimalMin(value = "0.0", inclusive = false)
-    private BigDecimal price;
-
-    @Min(0)
-    private int stock;
+    private String language;
 }

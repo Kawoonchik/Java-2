@@ -11,11 +11,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(componentModel = "spring")
 public interface CardMapper {
-
-    CardResponse toResponse(Card card);
-
     Card toEntity(CardCreateRequest request);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEntityFromRequest(CardUpdateRequest request, @MappingTarget Card card);
+    void updateEntityFromDto(CardUpdateRequest request, @MappingTarget Card card);
+    CardResponse toResponse(Card card);
 }

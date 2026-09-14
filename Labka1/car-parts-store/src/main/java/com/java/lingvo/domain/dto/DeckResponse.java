@@ -15,9 +15,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeckResponse {
-    private Integer id;
+    private Long id;
+    private String title;
+    private String description;
     private List<DeckCardResponse> items;
-    private BigDecimal totalPrice;
-    private OrderStatus status;
-    private OffsetDateTime createdAt;
 }

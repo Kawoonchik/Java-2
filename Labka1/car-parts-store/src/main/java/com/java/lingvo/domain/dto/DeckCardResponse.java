@@ -12,9 +12,8 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeckCardResponse {
-    private Integer productId;
-    private String productName;
-    private int quantity;
-    private BigDecimal unitPrice;
-    private BigDecimal lineTotal;
+    private Long id;
+    private Long cardId;
+    private String term;
+    private String translation;
 }
