@@ -1,6 +1,11 @@
-### Variables
-@token = your_jwt_token_here
+POST http://localhost:8080/realms/course-realm/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
 
+client_id=backend-app&username=alice&password=alice123&grant_type=password
+
+> {%
+    client.global.set("token", response.body.access_token);
+%}
 ### Cards API
 
 ### Get all cards
