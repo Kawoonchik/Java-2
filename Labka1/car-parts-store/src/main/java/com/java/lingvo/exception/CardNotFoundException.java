@@ -1,7 +1,7 @@
 package com.java.lingvo.exception;
 
 public class CardNotFoundException extends RuntimeException {
-    public CardNotFoundException(Integer id) {
+    public CardNotFoundException(Long id) {
         super("Card not found: " + id);
     }
 }

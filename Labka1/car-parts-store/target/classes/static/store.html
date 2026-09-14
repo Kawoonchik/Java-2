@@ -35,7 +35,7 @@
   <thead><tr><th>Product</th><th>Qty</th><th></th></tr></thead>
   <tbody><tr><td colspan="3" class="empty">Cart is empty</td></tr></tbody>
 </table>
-<button onclick="placeOrder()">Place order (requires login)</button>
+<button onclick="placeOrder()">Place deck (requires login)</button>
 
 <h2>3. My orders (requires login)</h2>
 <button onclick="loadMyOrders()">Load my orders</button>
@@ -95,12 +95,12 @@ function addToCart(productId) {
   const quantity = Number(qtyInput.value);
   if (!quantity || quantity < 1) return;
 
-  const product = products.find(p => p.id === productId);
+  const card = products.find(p => p.id === productId);
   const existing = cart.find(c => c.productId === productId);
   if (existing) {
     existing.quantity += quantity;
   } else {
-    cart.push({ productId, name: product ? product.name : ('#' + productId), quantity });
+    cart.push({ productId, name: card ? card.name : ('#' + productId), quantity });
   }
   renderCart();
 }
@@ -129,7 +129,7 @@ function renderCart() {
 
 async function placeOrder() {
   if (!accessToken) {
-    show('You must log in before placing an order. Click "Log in" above.');
+    show('You must log in before placing an deck. Click "Log in" above.');
     return;
   }
   if (cart.length === 0) {

@@ -25,19 +25,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CardNotFoundException.class)
     public ResponseEntity<ApplicationErrorResponse> handle(CardNotFoundException ex) {
-        log.error("ProductNotFoundException: ", ex);
+        log.error("CardNotFoundException: ", ex);
         return new ResponseEntity<>(new ApplicationErrorResponse(ex), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(DeckNotFoundException.class)
     public ResponseEntity<ApplicationErrorResponse> handle(DeckNotFoundException ex) {
-        log.error("OrderNotFoundException: ", ex);
-        return new ResponseEntity<>(new ApplicationErrorResponse(ex), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(InsufficientStockException.class)
-    public ResponseEntity<ApplicationErrorResponse> handle(InsufficientStockException ex) {
-        log.error("InsufficientStockException: ", ex);
+        log.error("DeckNotFoundException: ", ex);
         return new ResponseEntity<>(new ApplicationErrorResponse(ex), HttpStatus.NOT_FOUND);
     }
 }

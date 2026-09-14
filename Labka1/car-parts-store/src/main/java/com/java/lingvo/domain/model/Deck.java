@@ -28,6 +28,9 @@ public class Deck {
 
     private String description;
 
+    @Column(name = "customer_username", nullable = false)
+    private String customerUsername;
+
     @OneToMany(mappedBy = "deck", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DeckCard> cards = new ArrayList<>();
 }

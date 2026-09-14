@@ -1,0 +1,104 @@
+### Variables
+@token = your_jwt_token_here
+
+### Cards API
+
+### Get all cards
+GET http://localhost:8081/api/cards
+Authorization: Bearer {{token}}
+
+### Create a new card (Japanese)
+POST http://localhost:8081/api/cards
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "term": "猫",
+  "translation": "Кішка",
+  "exampleSentence": "猫が好きです (Neko ga suki desu).",
+  "language": "JA"
+}
+
+### Create a new card (Korean)
+POST http://localhost:8081/api/cards
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "term": "사과",
+  "translation": "Яблуко",
+  "exampleSentence": "사과가 빨개요 (Sagwaga ppalgaeyo).",
+  "language": "KO"
+}
+
+### Get card by ID
+GET http://localhost:8081/api/cards/1
+Authorization: Bearer {{token}}
+
+### Update card (Requires ADMIN role)
+PUT http://localhost:8081/api/cards/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "term": "猫 (updated)",
+  "translation": "Кіт",
+  "exampleSentence": "猫が寝ています。",
+  "language": "JA"
+}
+
+### Delete card (Requires ADMIN role)
+DELETE http://localhost:8081/api/cards/1
+Authorization: Bearer {{token}}
+
+
+### Decks API
+
+### Get all decks
+GET http://localhost:8081/api/decks
+Authorization: Bearer {{token}}
+
+### Get my decks
+GET http://localhost:8081/api/decks/mine
+Authorization: Bearer {{token}}
+
+### Create a new deck
+POST http://localhost:8081/api/decks
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Basic Japanese",
+  "description": "Essential Japanese words for beginners",
+  "items": [
+    {
+      "cardId": 2
+    }
+  ]
+}
+
+### Get deck by ID
+GET http://localhost:8081/api/decks/1
+Authorization: Bearer {{token}}
+
+### Update deck
+PUT http://localhost:8081/api/decks/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Basic Japanese (Advanced)",
+  "description": "More words added",
+  "items": [
+    {
+      "cardId": 2
+    },
+    {
+      "cardId": 3
+    }
+  ]
+}
+
+### Delete deck
+DELETE http://localhost:8081/api/decks/1
+Authorization: Bearer {{token}}

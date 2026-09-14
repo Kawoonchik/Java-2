@@ -7,12 +7,13 @@ import com.java.lingvo.service.CardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/api/cards")
 @RequiredArgsConstructor
 public class CardController {
 
@@ -20,28 +21,30 @@ public class CardController {
 
     @GetMapping
     public List<CardResponse> listAll() {
-        return cardService.listAll();
+        return cardService.getAllCards();
     }
 
     @GetMapping("/{id}")
-    public CardResponse getById(@PathVariable Integer id) {
-        return cardService.getById(id);
+    public CardResponse getById(@PathVariable Long id) {
+        return cardService.getCard(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CardResponse create(@Valid @RequestBody CardCreateRequest request) {
-        return cardService.create(request);
+        return cardService.createCard(request);
     }
 
     @PutMapping("/{id}")
-    public CardResponse update(@PathVariable Integer id, @Valid @RequestBody CardUpdateRequest request) {
-        return cardService.update(id, request);
+    @PreAuthorize("hasRole('ADMIN')")
+    public CardResponse update(@PathVariable Long id, @Valid @RequestBody CardUpdateRequest request) {
+        return cardService.updateCard(id, request);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Integer id) {
-        cardService.delete(id);
+    @PreAuthorize("hasRole('ADMIN')")
+    public void delete(@PathVariable Long id) {
+        cardService.deleteCard(id);
     }
 }

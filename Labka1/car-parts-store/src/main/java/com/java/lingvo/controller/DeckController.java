@@ -13,26 +13,42 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/api/decks")
 @RequiredArgsConstructor
 public class DeckController {
 
     private final DeckService deckService;
 
+    @GetMapping
+    public List<DeckResponse> listAll() {
+        return deckService.getAllDecks();
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public DeckResponse placeOrder(@Valid @RequestBody CreateDeckRequest request,
-                                   @AuthenticationPrincipal CurrentUser user) {
-        return deckService.placeOrder(user.username(), request);
+    public DeckResponse create(@Valid @RequestBody CreateDeckRequest request,
+                               @AuthenticationPrincipal CurrentUser user) {
+        return deckService.createDeck(request, user.username());
     }
 
     @GetMapping("/mine")
-    public List<DeckResponse> myOrders(@AuthenticationPrincipal CurrentUser user) {
-        return deckService.listMyOrders(user.username());
+    public List<DeckResponse> myDecks(@AuthenticationPrincipal CurrentUser user) {
+        return deckService.getUserDecks(user.username());
     }
 
     @GetMapping("/{id}")
-    public DeckResponse getOrder(@PathVariable Integer id, @AuthenticationPrincipal CurrentUser user) {
-        return deckService.getOrder(id, user.username(), user.hasRole("ADMIN"));
+    public DeckResponse getById(@PathVariable Long id) {
+        return deckService.getDeck(id);
+    }
+
+    @PutMapping("/{id}")
+    public DeckResponse update(@PathVariable Long id, @Valid @RequestBody CreateDeckRequest request) {
+        return deckService.updateDeck(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        deckService.deleteDeck(id);
     }
 }

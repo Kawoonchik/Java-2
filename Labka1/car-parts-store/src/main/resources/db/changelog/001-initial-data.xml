@@ -5,128 +5,63 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="001-create-products-table" author="course">
-        <createTable tableName="products">
-            <column name="id" type="INT" autoIncrement="true">
+    <changeSet id="001-create-cards-table" author="course">
+        <createTable tableName="cards">
+            <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="sku" type="VARCHAR(32)">
-                <constraints nullable="false" unique="true"/>
-            </column>
-            <column name="name" type="VARCHAR(255)">
+            <column name="term" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="category" type="VARCHAR(64)">
+            <column name="translation" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="manufacturer" type="VARCHAR(128)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="compatible_model" type="VARCHAR(255)"/>
-            <column name="price" type="DECIMAL(10,2)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="stock" type="INT" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
+            <column name="example_sentence" type="TEXT"/>
+            <column name="language" type="VARCHAR(10)"/>
         </createTable>
-
-        <createIndex indexName="idx_products_category" tableName="products">
-            <column name="category"/>
-        </createIndex>
     </changeSet>
 
-    <changeSet id="002-create-orders-table" author="course">
-        <createTable tableName="orders">
-            <column name="id" type="INT" autoIncrement="true">
+    <changeSet id="002-create-decks-table" author="course">
+        <createTable tableName="decks">
+            <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="total_price" type="DECIMAL(10,2)">
+            <column name="title" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="status" type="VARCHAR(32)">
-                <constraints nullable="false"/>
-            </column>
+            <column name="description" type="TEXT"/>
             <column name="customer_username" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
-                <constraints nullable="false"/>
-            </column>
         </createTable>
     </changeSet>
 
-    <changeSet id="003-create-deck-items-table" author="course">
-        <createTable tableName="order_items">
-            <column name="id" type="INT" autoIncrement="true">
+    <changeSet id="003-create-deck-cards-table" author="course">
+        <createTable tableName="deck_cards">
+            <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="order_id" type="INT">
+            <column name="deck_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="product_id" type="INT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="quantity" type="INT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="unit_price" type="DECIMAL(10,2)">
+            <column name="card_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
 
         <addForeignKeyConstraint
-                baseTableName="order_items"
-                baseColumnNames="order_id"
-                constraintName="fk_order_items_order"
-                referencedTableName="orders"
+                baseTableName="deck_cards"
+                baseColumnNames="deck_id"
+                constraintName="fk_deck_cards_deck"
+                referencedTableName="decks"
                 referencedColumnNames="id"/>
 
         <addForeignKeyConstraint
-                baseTableName="order_items"
-                baseColumnNames="product_id"
-                constraintName="fk_order_items_product"
-                referencedTableName="products"
+                baseTableName="deck_cards"
+                baseColumnNames="card_id"
+                constraintName="fk_deck_cards_card"
+                referencedTableName="cards"
                 referencedColumnNames="id"/>
-    </changeSet>
-
-    <changeSet id="004-seed-products" author="course">
-        <insert tableName="products">
-            <column name="sku" value="BRK-PAD-001"/>
-            <column name="name" value="Ceramic Brake Pad Set (Front)"/>
-            <column name="category" value="BRAKES"/>
-            <column name="manufacturer" value="Bosch"/>
-            <column name="compatible_model" value="Toyota Corolla 2015-2020"/>
-            <column name="price" valueNumeric="45.99"/>
-            <column name="stock" valueNumeric="120"/>
-        </insert>
-        <insert tableName="products">
-            <column name="sku" value="OIL-FLT-014"/>
-            <column name="name" value="Oil Filter"/>
-            <column name="category" value="ENGINE"/>
-            <column name="manufacturer" value="Mann-Filter"/>
-            <column name="compatible_model" value="Volkswagen Golf 2012-2019"/>
-            <column name="price" valueNumeric="9.50"/>
-            <column name="stock" valueNumeric="300"/>
-        </insert>
-        <insert tableName="products">
-            <column name="sku" value="SPK-PLG-007"/>
-            <column name="name" value="Iridium Spark Plug"/>
-            <column name="category" value="ENGINE"/>
-            <column name="manufacturer" value="NGK"/>
-            <column name="compatible_model" value="Honda Civic 2016-2021"/>
-            <column name="price" valueNumeric="12.25"/>
-            <column name="stock" valueNumeric="5"/>
-        </insert>
-        <insert tableName="products">
-            <column name="sku" value="SUS-STR-022"/>
-            <column name="name" value="Front Suspension Strut"/>
-            <column name="category" value="SUSPENSION"/>
-            <column name="manufacturer" value="KYB"/>
-            <column name="compatible_model" value="Ford Focus 2011-2018"/>
-            <column name="price" valueNumeric="89.00"/>
-            <column name="stock" valueNumeric="0"/>
-        </insert>
     </changeSet>
 
 </databaseChangeLog>

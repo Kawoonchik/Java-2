@@ -1,7 +1,7 @@
 package com.java.lingvo.exception;
 
 public class DeckNotFoundException extends RuntimeException {
-    public DeckNotFoundException(Integer id) {
+    public DeckNotFoundException(Long id) {
         super("Deck not found: " + id);
     }
 }

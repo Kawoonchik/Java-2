@@ -2,196 +2,284 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Car Parts Store — Demo UI</title>
+<title>Lingvo App — Learning Dashboard</title>
 <style>
-  body { font-family: monospace; max-width: 900px; margin: 40px auto; padding: 0 16px; }
-  button { padding: 6px 10px; cursor: pointer; margin: 2px; }
-  input { padding: 6px; width: 60px; }
-  pre { background: #f0f0f0; padding: 12px; white-space: pre-wrap; word-break: break-all; }
-  table { border-collapse: collapse; width: 100%; margin: 12px 0; }
-  td, th { border: 1px solid #ccc; padding: 6px 10px; text-align: left; font-size: 14px; }
-  h1 { font-size: 18px; }
-  h2 { font-size: 15px; margin-top: 28px; }
-  .status { font-size: 13px; color: #555; }
-  .empty { color: #888; font-style: italic; }
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 1000px; margin: 40px auto; padding: 0 20px; background-color: #f8f9fa; }
+  button { padding: 8px 12px; cursor: pointer; margin: 4px; border: none; border-radius: 4px; background-color: #007bff; color: white; transition: background-color 0.2s; }
+  button:hover { background-color: #0056b3; }
+  button.danger { background-color: #dc3545; }
+  button.danger:hover { background-color: #c82333; }
+  button.secondary { background-color: #6c757d; }
+  input, textarea, select { padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 4px; }
+  pre { background: #e9ecef; padding: 15px; white-space: pre-wrap; word-break: break-all; border-radius: 4px; border: 1px solid #dee2e6; }
+  table { border-collapse: collapse; width: 100%; margin: 20px 0; background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+  td, th { border: 1px solid #dee2e6; padding: 12px; text-align: left; }
+  th { background-color: #f1f3f5; }
+  h1 { color: #343a40; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
+  h2 { color: #495057; margin-top: 30px; }
+  .status { padding: 10px; border-radius: 4px; background-color: #d1ecf1; color: #0c5460; margin-bottom: 20px; }
+  .card-form, .deck-form { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+  .flex { display: flex; gap: 20px; }
+  .flex > div { flex: 1; }
+  .empty { color: #6c757d; font-style: italic; }
+  .admin-only { border-left: 4px solid #dc3545; padding-left: 10px; }
 </style>
 </head>
 <body>
 
-<h1>Car Parts Store (intentionally basic demo UI)</h1>
-<p class="status" id="loginStatus">Checking login status...</p>
-<button onclick="login()">Log in</button>
-<button onclick="logout()">Log out</button>
+<h1>Lingvo App Dashboard</h1>
+<div class="status" id="loginStatus">Checking login status...</div>
+<div>
+    <button onclick="login()">Log in with Keycloak</button>
+    <button class="secondary" onclick="logout()">Log out</button>
+</div>
 
-<h2>1. Browse products (public - no login needed)</h2>
-<button onclick="loadProducts()">Load products</button>
-<table id="productsTable">
-  <thead><tr><th>ID</th><th>Name</th><th>Price</th><th>Stock</th><th>Qty</th><th></th></tr></thead>
-  <tbody></tbody>
-</table>
+<div class="flex">
+    <div>
+        <h2>1. Cards Management</h2>
+        <button onclick="loadCards()">Refresh Cards List</button>
+        <table id="cardsTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Term</th>
+                    <th>Translation</th>
+                    <th>Lang</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td colspan="5" class="empty">No cards loaded</td></tr>
+            </tbody>
+        </table>
 
-<h2>2. Cart</h2>
-<table id="cartTable">
-  <thead><tr><th>Product</th><th>Qty</th><th></th></tr></thead>
-  <tbody><tr><td colspan="3" class="empty">Cart is empty</td></tr></tbody>
-</table>
-<button onclick="placeOrder()">Place deck (requires login)</button>
+        <div class="card-form">
+            <h3>Add New Card</h3>
+            <input type="text" id="cardTerm" placeholder="Term (e.g. 猫)">
+            <input type="text" id="cardTranslation" placeholder="Translation">
+            <input type="text" id="cardExample" placeholder="Example Sentence">
+            <select id="cardLanguage">
+                <option value="EN">English</option>
+                <option value="JA">Japanese</option>
+                <option value="KO">Korean</option>
+                <option value="UK">Ukrainian</option>
+            </select>
+            <button onclick="createCard()">Create Card</button>
+        </div>
+    </div>
 
-<h2>3. My orders (requires login)</h2>
-<button onclick="loadMyOrders()">Load my orders</button>
-<table id="ordersTable">
-  <thead><tr><th>Order ID</th><th>Items</th><th>Total</th><th>Status</th><th>Placed</th></tr></thead>
-  <tbody></tbody>
-</table>
+    <div>
+        <h2>2. Decks Management</h2>
+        <button onclick="loadDecks()">All Decks</button>
+        <button onclick="loadMyDecks()">My Decks</button>
+        <table id="decksTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Cards Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td colspan="5" class="empty">No decks loaded</td></tr>
+            </tbody>
+        </table>
 
-<h2>Raw response</h2>
-<pre id="output">(responses show up here)</pre>
+        <div class="deck-form">
+            <h3>Create New Deck</h3>
+            <input type="text" id="deckTitle" placeholder="Deck Title">
+            <textarea id="deckDescription" placeholder="Description"></textarea>
+            <div id="cardSelection" style="max-height: 200px; overflow-y: auto; border: 1px solid #ced4da; padding: 10px; margin-bottom: 10px;">
+                <p class="empty">Load cards to select them for a deck</p>
+            </div>
+            <button onclick="createDeck()">Create Deck</button>
+        </div>
+    </div>
+</div>
+
+<h2>Server Response Log</h2>
+<pre id="output">Welcome to Lingvo App. Responses will appear here...</pre>
 
 <script>
 let accessToken = null;
-let products = [];
-let cart = [];
+let allCards = [];
 
 async function tryFetchToken() {
-  try {
-    const res = await fetch('/ui/token', { credentials: 'include' });
-    if (!res.ok) throw new Error('not logged in');
-    const data = await res.json();
-    accessToken = data.access_token;
-    document.getElementById('loginStatus').textContent = 'Logged in.';
-  } catch (e) {
-    accessToken = null;
-    document.getElementById('loginStatus').textContent = 'Not logged in - browsing only.';
-  }
+    try {
+        const res = await fetch('/ui/token', { credentials: 'include' });
+        if (!res.ok) throw new Error('not logged in');
+        const data = await res.json();
+        accessToken = data.access_token;
+        document.getElementById('loginStatus').textContent = 'Status: Logged In';
+        document.getElementById('loginStatus').style.backgroundColor = '#d4edda';
+        document.getElementById('loginStatus').style.color = '#155724';
+    } catch (e) {
+        accessToken = null;
+        document.getElementById('loginStatus').textContent = 'Status: Not Logged In (Limited Access)';
+    }
 }
 
-function login() {
-    window.location.href = '/oauth2/authorization/keycloak';
+function login() { window.location.href = '/oauth2/authorization/keycloak'; }
+function logout() { window.location.href = '/logout'; }
+
+function log(method, url, status, data) {
+    const text = `${method} ${url} -> ${status}\n${JSON.stringify(data, null, 2)}`;
+    document.getElementById('output').textContent = text;
 }
 
-function logout() {
-  window.location.href = '/logout';
+async function apiFetch(url, method = 'GET', body = null) {
+    const headers = { 'Content-Type': 'application/json' };
+    if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+    }
+
+    const options = { method, headers };
+    if (body) options.body = JSON.stringify(body);
+
+    try {
+        const res = await fetch(url, options);
+        let data = null;
+        if (res.status !== 204) {
+            data = await res.json();
+        }
+        log(method, url, res.status, data);
+        return { ok: res.ok, status: res.status, data };
+    } catch (e) {
+        log(method, url, 'ERROR', e.message);
+        return { ok: false, status: 'ERROR', data: e.message };
+    }
 }
 
-async function loadProducts() {
-  const res = await fetch('/api/products');
-  products = await res.json();
-  const tbody = document.querySelector('#productsTable tbody');
-  tbody.innerHTML = '';
-  products.forEach(p => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${p.id}</td><td>${p.name}</td><td>$${p.price}</td><td>${p.stock}</td>
-      <td><input type="number" id="qty-${p.id}" value="1" min="1"></td>
-      <td><button onclick="addToCart(${p.id})">Add to cart</button></td>
-    `;
-    tbody.appendChild(row);
-  });
-  show('Loaded ' + products.length + ' products');
+// --- Cards ---
+async function loadCards() {
+    const res = await apiFetch('/api/cards');
+    if (res.ok) {
+        allCards = res.data;
+        renderCards();
+        renderCardSelection();
+    }
 }
 
-function addToCart(productId) {
-  const qtyInput = document.getElementById('qty-' + productId);
-  const quantity = Number(qtyInput.value);
-  if (!quantity || quantity < 1) return;
-
-  const card = products.find(p => p.id === productId);
-  const existing = cart.find(c => c.productId === productId);
-  if (existing) {
-    existing.quantity += quantity;
-  } else {
-    cart.push({ productId, name: card ? card.name : ('#' + productId), quantity });
-  }
-  renderCart();
+function renderCards() {
+    const tbody = document.querySelector('#cardsTable tbody');
+    tbody.innerHTML = '';
+    if (allCards.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="empty">No cards found</td></tr>';
+        return;
+    }
+    allCards.forEach(c => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${c.id}</td>
+            <td>${c.term}</td>
+            <td>${c.translation}</td>
+            <td>${c.language}</td>
+            <td>
+                <button class="danger" onclick="deleteCard(${c.id})">Del</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
 }
 
-function removeFromCart(productId) {
-  cart = cart.filter(c => c.productId !== productId);
-  renderCart();
+function renderCardSelection() {
+    const container = document.getElementById('cardSelection');
+    container.innerHTML = '<strong>Select Cards:</strong><br>';
+    allCards.forEach(c => {
+        const div = document.createElement('div');
+        div.innerHTML = `<label><input type="checkbox" name="deckCard" value="${c.id}"> ${c.term} (${c.language})</label>`;
+        container.appendChild(div);
+    });
 }
 
-function renderCart() {
-  const tbody = document.querySelector('#cartTable tbody');
-  if (cart.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="3" class="empty">Cart is empty</td></tr>';
-    return;
-  }
-  tbody.innerHTML = '';
-  cart.forEach(c => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${c.name}</td><td>${c.quantity}</td>
-      <td><button onclick="removeFromCart(${c.productId})">Remove</button></td>
-    `;
-    tbody.appendChild(row);
-  });
+async function createCard() {
+    const body = {
+        term: document.getElementById('cardTerm').value,
+        translation: document.getElementById('cardTranslation').value,
+        exampleSentence: document.getElementById('cardExample').value,
+        language: document.getElementById('cardLanguage').value
+    };
+    const res = await apiFetch('/api/cards', 'POST', body);
+    if (res.ok) {
+        loadCards();
+        document.getElementById('cardTerm').value = '';
+        document.getElementById('cardTranslation').value = '';
+        document.getElementById('cardExample').value = '';
+    }
 }
 
-async function placeOrder() {
-  if (!accessToken) {
-    show('You must log in before placing an deck. Click "Log in" above.');
-    return;
-  }
-  if (cart.length === 0) {
-    show('Cart is empty - add something first.');
-    return;
-  }
-
-  const body = {
-    items: cart.map(c => ({ productId: c.productId, quantity: c.quantity }))
-  };
-
-  const res = await fetch('/api/orders', {
-    method: 'POST',
-    headers: {
-      'Authorization': 'Bearer ' + accessToken,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(body)
-  });
-
-  const raw = await res.text();
-  let parsed;
-  try { parsed = JSON.stringify(JSON.parse(raw), null, 2); } catch (e) { parsed = raw; }
-  show('POST /api/orders -> ' + res.status + '\n' + parsed);
-
-  if (res.ok) {
-    cart = [];
-    renderCart();
-    loadProducts();
-  }
+async function deleteCard(id) {
+    if (confirm('Delete card #' + id + '? (Admin only)')) {
+        const res = await apiFetch('/api/cards/' + id, 'DELETE');
+        if (res.ok) loadCards();
+    }
 }
 
-async function loadMyOrders() {
-  if (!accessToken) {
-    show('You must log in before viewing orders. Click "Log in" above.');
-    return;
-  }
-  const res = await fetch('/api/orders/mine', {
-    headers: { 'Authorization': 'Bearer ' + accessToken }
-  });
-  const orders = await res.json();
-  const tbody = document.querySelector('#ordersTable tbody');
-  tbody.innerHTML = '';
-  orders.forEach(o => {
-    const itemsSummary = (o.items || [])
-      .map(i => `${i.productName} x${i.quantity}`)
-      .join(', ');
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${o.id}</td><td>${itemsSummary}</td><td>$${o.totalPrice}</td>
-      <td>${o.status}</td><td>${o.createdAt}</td>
-    `;
-    tbody.appendChild(row);
-  });
-  show('Loaded ' + orders.length + ' of your orders');
+// --- Decks ---
+async function loadDecks() {
+    const res = await apiFetch('/api/decks');
+    if (res.ok) renderDecks(res.data);
 }
 
-function show(text) {
-  document.getElementById('output').textContent = text;
+async function loadMyDecks() {
+    const res = await apiFetch('/api/decks/mine');
+    if (res.ok) renderDecks(res.data);
 }
 
-tryFetchToken();
+function renderDecks(decks) {
+    const tbody = document.querySelector('#decksTable tbody');
+    tbody.innerHTML = '';
+    if (decks.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="empty">No decks found</td></tr>';
+        return;
+    }
+    decks.forEach(d => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${d.id}</td>
+            <td>${d.title}</td>
+            <td>${d.description || '-'}</td>
+            <td>${d.items ? d.items.length : 0}</td>
+            <td>
+                <button class="danger" onclick="deleteDeck(${d.id})">Del</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+async function createDeck() {
+    const selectedCards = Array.from(document.querySelectorAll('input[name="deckCard"]:checked'))
+        .map(cb => ({ cardId: parseInt(cb.value) }));
+
+    const body = {
+        title: document.getElementById('deckTitle').value,
+        description: document.getElementById('deckDescription').value,
+        items: selectedCards
+    };
+    const res = await apiFetch('/api/decks', 'POST', body);
+    if (res.ok) {
+        loadDecks();
+        document.getElementById('deckTitle').value = '';
+        document.getElementById('deckDescription').value = '';
+        document.querySelectorAll('input[name="deckCard"]:checked').forEach(cb => cb.checked = false);
+    }
+}
+
+async function deleteDeck(id) {
+    if (confirm('Delete deck #' + id + '?')) {
+        const res = await apiFetch('/api/decks/' + id, 'DELETE');
+        if (res.ok) loadDecks();
+    }
+}
+
+// Init
+tryFetchToken().then(() => {
+    loadCards();
+    loadDecks();
+});
 </script>
 
 </body>

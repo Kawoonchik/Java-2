@@ -19,20 +19,20 @@ import java.math.BigDecimal;
 @Entity
 @Getter
 @Setter
-@Table(name = "deck_items")
+@Table(name = "deck_cards")
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeckCard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
+    @JoinColumn(name = "deck_id", nullable = false)
     private Deck deck;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "card_id", nullable = false)
     private Card card;
 }

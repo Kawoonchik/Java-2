@@ -57,4 +57,42 @@ public class DeckService {
                 .orElseThrow(() -> new DeckNotFoundException(id));
         return deckMapper.toResponse(deck);
     }
+
+    public List<DeckResponse> getAllDecks() {
+        return deckRepository.findAll().stream()
+                .map(deckMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public DeckResponse updateDeck(Long id, CreateDeckRequest request) {
+        Deck deck = deckRepository.findById(id)
+                .orElseThrow(() -> new DeckNotFoundException(id));
+        
+        deck.setTitle(request.getTitle());
+        deck.setDescription(request.getDescription());
+        
+        if (request.getItems() != null) {
+            deck.getCards().clear();
+            request.getItems().forEach(itemRequest -> {
+                Card card = cardRepository.findById(itemRequest.getCardId())
+                        .orElseThrow(() -> new CardNotFoundException(itemRequest.getCardId()));
+
+                DeckCard deckCard = new DeckCard();
+                deckCard.setDeck(deck);
+                deckCard.setCard(card);
+                deck.getCards().add(deckCard);
+            });
+        }
+        
+        return deckMapper.toResponse(deckRepository.save(deck));
+    }
+
+    @Transactional
+    public void deleteDeck(Long id) {
+        if (!deckRepository.existsById(id)) {
+            throw new DeckNotFoundException(id);
+        }
+        deckRepository.deleteById(id);
+    }
 }
