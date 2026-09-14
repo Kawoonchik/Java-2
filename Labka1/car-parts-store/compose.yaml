@@ -9,3 +9,13 @@ services:
       - "8080:8080"
     volumes:
       - ./keycloak/course-realm.json:/opt/keycloak/data/import/course-realm.json:ro
+
+  mariadb:
+    image: mariadb:10.11
+    environment:
+      MARIADB_DATABASE: car_parts_store
+      MARIADB_USER: appuser
+      MARIADB_PASSWORD: appuser
+      MARIADB_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3307:3306"

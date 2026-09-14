@@ -29,10 +29,11 @@ spring:
       lifecycle-management: start-and-stop
 
   datasource:
-    url: jdbc:mariadb://localhost:3306/car_parts_store
+    url: jdbc:mariadb://localhost:3306/car_parts_store?allowPublicKeyRetrieval=true&useSSL=false
     username: appuser
     password: appuser
     driver-class-name: org.mariadb.jdbc.Driver
+
 
   jpa:
     hibernate:
