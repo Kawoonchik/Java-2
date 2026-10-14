@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import com.java.lingvo.validation.ValidFlashcard;
 
 import java.math.BigDecimal;
 
@@ -15,6 +16,7 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ValidFlashcard
 public class CardCreateRequest {
 
     @NotBlank

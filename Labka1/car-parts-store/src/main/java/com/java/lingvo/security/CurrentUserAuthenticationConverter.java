@@ -19,7 +19,7 @@ public class CurrentUserAuthenticationConverter implements Converter<Jwt, Abstra
     public AbstractAuthenticationToken convert(Jwt jwt) {
         List<String> roles = extractRoles(jwt);
         Collection<GrantedAuthority> authorities = roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
                 .collect(Collectors.toList());
 
         CurrentUser principal = new CurrentUser(

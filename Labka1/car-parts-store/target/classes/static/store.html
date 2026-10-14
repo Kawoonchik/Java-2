@@ -5,35 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lingvo - Мої картки</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; max-width: 800px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        body { font-family: Arial, sans-serif; margin: 40px; max-width: 900px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
         th { background-color: #f4f4f4; }
-        form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px; padding: 20px; border: 1px solid #ddd; }
-        input, button { padding: 10px; font-size: 16px; }
-        button { background-color: #007bff; color: white; border: none; cursor: pointer; }
-        button:hover { background-color: #0056b3; }
+        form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; padding: 20px; border: 1px solid #ddd; border-radius: 8px;}
+        input, button { padding: 10px; font-size: 16px; border-radius: 4px; border: 1px solid #ccc;}
+        .primary-btn { background-color: #007bff; color: white; border: none; cursor: pointer; font-weight: bold;}
+        .primary-btn:hover { background-color: #0056b3; }
+        .cancel-btn { background-color: #6c757d; color: white; border: none; cursor: pointer; font-weight: bold;}
+        .cancel-btn:hover { background-color: #5a6268; }
+        .action-btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; color: white; }
+        .edit-btn { background-color: #28a745; margin-right: 5px; }
+        .delete-btn { background-color: #dc3545; }
+        .controls { display: flex; justify-content: space-between; margin-bottom: 15px; background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #eee;}
+        .controls input[type="text"] { width: 100%; max-width: 400px; }
     </style>
 </head>
 <body>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-    <h1 style="margin: 0;">Словник Lingvo</h1>
-    <form action="/logout" method="post" style="margin: 0;">
-        <button type="submit" style="background-color: #6c757d; border-radius: 5px;">Вийти з акаунта</button>
+    <h1 style="margin: 0;">📚 Словник Lingvo</h1>
+    <form action="/logout" method="post" style="margin: 0; padding: 0; border: none;">
+        <button type="submit" class="cancel-btn">Вийти з акаунта</button>
     </form>
 </div>
 
 <form id="cardForm">
-    <h3>Додати нову картку</h3>
-    <input type="text" id="term" placeholder="Термін (напр., 語法)" required>
-    <input type="text" id="translation" placeholder="Переклад (напр., граматика)" required>
-    <input type="text" id="exampleSentence" placeholder="Приклад речення">
-    <input type="text" id="language" placeholder="Мова (напр., Japanese)" required>
-    <button type="submit">Зберегти картку</button>
+    <h3 id="formTitle" style="margin-top: 0;">Додати нову картку</h3>
+    <div style="display: flex; gap: 10px;">
+        <input type="text" id="term" placeholder="Термін (напр., 語法)" required style="flex: 1;">
+        <input type="text" id="translation" placeholder="Переклад (напр., граматика)" required style="flex: 1;">
+        <input type="text" id="language" placeholder="Мова (JA, KO...)" required style="width: 120px;">
+    </div>
+    <input type="text" id="exampleSentence" placeholder="Приклад речення (опціонально)">
+
+    <div style="display: flex; gap: 10px;">
+        <button type="submit" id="submitBtn" class="primary-btn" style="flex: 1;">Зберегти картку</button>
+        <button type="button" id="cancelBtn" class="cancel-btn" style="display: none; flex: 1;" onclick="cancelEdit()">Скасувати редагування</button>
+    </div>
 </form>
 
-<h3>Мої збережені картки</h3>
+<div class="controls">
+    <input type="text" id="searchInput" placeholder="🔍 Швидкий пошук за терміном чи перекладом...">
+</div>
+
 <table>
     <thead>
     <tr>
@@ -41,7 +57,7 @@
         <th>Переклад</th>
         <th>Приклад</th>
         <th>Мова</th>
-        <th>Дія</th>
+        <th style="width: 160px;">Дії</th>
     </tr>
     </thead>
     <tbody id="cardsTableBody">
@@ -51,59 +67,108 @@
 
 <script>
     const API_URL = '/api/cards';
+    let allCards = [];
+    let editingCardId = null; // Змінна для відстеження стану редагування
 
-    // Завантаження карток при відкритті сторінки
     document.addEventListener('DOMContentLoaded', loadCards);
+    document.getElementById('searchInput').addEventListener('input', renderCards);
 
-    // Обробка форми додавання
+    // Обробка форми (Додавання або Оновлення)
     document.getElementById('cardForm').addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const newCard = {
+        const cardData = {
             term: document.getElementById('term').value,
             translation: document.getElementById('translation').value,
             exampleSentence: document.getElementById('exampleSentence').value,
             language: document.getElementById('language').value
         };
 
-        const response = await fetch(API_URL, {
-            method: 'POST',
+        const method = editingCardId ? 'PUT' : 'POST';
+        const url = editingCardId ? `${API_URL}/${editingCardId}` : API_URL;
+
+        const response = await fetch(url, {
+            method: method,
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newCard)
+            body: JSON.stringify(cardData)
         });
 
         if (response.ok) {
-            document.getElementById('cardForm').reset();
-            loadCards(); // Оновлюємо таблицю
+            cancelEdit(); // Скидаємо форму
+            loadCards();  // Оновлюємо таблицю
+        } else if (response.status === 403) {
+            alert('У вас немає прав для виконання цієї дії (потрібна роль ADMIN).');
         } else {
-            alert('Помилка при збереженні картки. Перевірте права доступу.');
+            alert('Сталася помилка при збереженні картки.');
         }
     });
 
-    // Отримання списку карток
+    // Завантаження з сервера
     async function loadCards() {
         const response = await fetch(API_URL);
         if (!response.ok) return;
+        allCards = await response.json();
+        renderCards();
+    }
 
-        const cards = await response.json();
+    // Відображення карток (з урахуванням фільтру пошуку)
+    function renderCards() {
+        const searchQuery = document.getElementById('searchInput').value.toLowerCase();
         const tbody = document.getElementById('cardsTableBody');
         tbody.innerHTML = '';
 
-        cards.forEach(card => {
+        const filteredCards = allCards.filter(card =>
+            card.term.toLowerCase().includes(searchQuery) ||
+            card.translation.toLowerCase().includes(searchQuery) ||
+            card.language.toLowerCase().includes(searchQuery)
+        );
+
+        filteredCards.forEach(card => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                    <td>${card.term}</td>
+                    <td style="font-size: 18px; font-weight: bold;">${card.term}</td>
                     <td>${card.translation}</td>
                     <td>${card.exampleSentence || '-'}</td>
                     <td>${card.language}</td>
-                    <td><button onclick="deleteCard(${card.id})" style="background-color: #dc3545;">Видалити</button></td>
+                    <td>
+                        <button onclick="editCard(${card.id})" class="action-btn edit-btn">Редагувати</button>
+                        <button onclick="deleteCard(${card.id})" class="action-btn delete-btn">Видалити</button>
+                    </td>
                 `;
             tbody.appendChild(tr);
         });
     }
 
+    // Підготовка форми до редагування
+    function editCard(id) {
+        const card = allCards.find(c => c.id === id);
+        if (!card) return;
+
+        editingCardId = id;
+        document.getElementById('term').value = card.term;
+        document.getElementById('translation').value = card.translation;
+        document.getElementById('exampleSentence').value = card.exampleSentence || '';
+        document.getElementById('language').value = card.language;
+
+        document.getElementById('formTitle').innerText = 'Редагувати картку';
+        document.getElementById('submitBtn').innerText = 'Оновити картку';
+        document.getElementById('cancelBtn').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Скасування редагування
+    function cancelEdit() {
+        editingCardId = null;
+        document.getElementById('cardForm').reset();
+        document.getElementById('formTitle').innerText = 'Додати нову картку';
+        document.getElementById('submitBtn').innerText = 'Зберегти картку';
+        document.getElementById('cancelBtn').style.display = 'none';
+    }
+
     // Видалення картки
     async function deleteCard(id) {
+        if (!confirm('Ви впевнені, що хочете видалити цю картку?')) return;
+
         const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
 
         if (response.ok) {

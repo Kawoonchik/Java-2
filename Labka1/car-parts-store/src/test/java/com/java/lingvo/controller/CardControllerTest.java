@@ -6,6 +6,7 @@ import com.java.lingvo.domain.dto.CardUpdateRequest;
 import com.java.lingvo.service.CardService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -22,50 +24,47 @@ class CardControllerTest {
     @Mock
     private CardService cardService;
 
-    private CardController controller() {
-        return new CardController(cardService);
-    }
+    @InjectMocks
+    private CardController cardController;
 
     @Test
     void listAll_returnsWhatServiceReturns() {
         List<CardResponse> expected = List.of(new CardResponse());
-        when(cardService.listAll()).thenReturn(expected);
+        when(cardService.getAllCards()).thenReturn(expected);
 
-        assertThat(controller().listAll()).isSameAs(expected);
+        assertThat(cardController.listAll()).isSameAs(expected);
     }
 
     @Test
     void getById_delegatesWithGivenId() {
         CardResponse expected = new CardResponse();
-        when(cardService.getById(7)).thenReturn(expected);
+        when(cardService.getCard(7L)).thenReturn(expected);
 
-        assertThat(controller().getById(7)).isSameAs(expected);
+        assertThat(cardController.getById(7L)).isSameAs(expected);
     }
 
     @Test
     void create_delegatesRequestToService() {
-        CardCreateRequest request = new CardCreateRequest(
-                "SKU", "Name", "CAT", "Manu", null, new BigDecimal("1.00"), 1);
+        CardCreateRequest request = new CardCreateRequest();
         CardResponse expected = new CardResponse();
-        when(cardService.create(request)).thenReturn(expected);
+        when(cardService.createCard(request)).thenReturn(expected);
 
-        assertThat(controller().create(request)).isSameAs(expected);
+        assertThat(cardController.create(request)).isSameAs(expected);
     }
 
     @Test
     void update_delegatesIdAndRequestToService() {
-        CardUpdateRequest request = new CardUpdateRequest(
-                "Name", "CAT", "Manu", null, new BigDecimal("1.00"), 1);
+        CardUpdateRequest request = new CardUpdateRequest();
         CardResponse expected = new CardResponse();
-        when(cardService.update(3, request)).thenReturn(expected);
+        when(cardService.updateCard(3L, request)).thenReturn(expected);
 
-        assertThat(controller().update(3, request)).isSameAs(expected);
+        assertThat(cardController.update(3L, request)).isSameAs(expected);
     }
 
     @Test
     void delete_delegatesIdToService() {
-        controller().delete(5);
+        cardController.delete(123L);
 
-        verify(cardService).delete(5);
+        verify(cardService).deleteCard(123L);
     }
 }

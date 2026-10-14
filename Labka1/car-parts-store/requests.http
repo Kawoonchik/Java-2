@@ -1,6 +1,67 @@
 POST http://localhost:8080/realms/course-realm/protocol/openid-connect/token
 Content-Type: application/x-www-form-urlencoded
 
+client_id=backend-app
+    &username=alice
+    &password=alice123
+    &grant_type=password
+
+> {%
+    client.global.set("admin_token", response.body.access_token);
+%}
+
+
+### ===================================================================
+
+POST http://localhost:8081/api/cards
+Content-Type: application/json
+Authorization: Bearer {{admin_token}}
+
+{
+  "term": "яблуко",
+  "translation": "яблуко"
+}
+
+
+###
+POST http://localhost:8081/api/cards
+Content-Type: application/json
+Authorization: Bearer {{admin_token}}
+
+{
+  "term": "apple",
+  "translation": "apple"
+}
+
+
+### ===================================================================
+
+
+DELETE http://localhost:8081/api/cards/1
+Authorization: Bearer {{admin_token}}
+
+
+### ===================================================================
+
+
+
+GET http://localhost:8081/api/cards/my-profile
+Authorization: Bearer {{admin_token}}
+
+
+
+
+
+
+### ===================================================================
+GET http://localhost:8081/api/aop-demo/run
+Authorization: Bearer {{admin_token}}
+
+
+
+POST http://localhost:8080/realms/course-realm/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
 client_id=backend-app&username=alice&password=alice123&grant_type=password
 
 > {%

@@ -17,7 +17,6 @@ public class SecurityConfig {
     private final CurrentUserAuthenticationConverter converter;
     private final ClientRegistrationRepository clientRegistrationRepository;
 
-    // Інжектуємо ClientRegistrationRepository для зв'язку з Keycloak при виході
     public SecurityConfig(CurrentUserAuthenticationConverter converter, ClientRegistrationRepository clientRegistrationRepository) {
         this.converter = converter;
         this.clientRegistrationRepository = clientRegistrationRepository;
@@ -26,7 +25,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        // Налаштовуємо правильний OIDC логаут
         OidcClientInitiatedLogoutSuccessHandler logoutSuccessHandler =
                 new OidcClientInitiatedLogoutSuccessHandler(clientRegistrationRepository);
         logoutSuccessHandler.setPostLogoutRedirectUri("{baseUrl}/store.html");
@@ -41,7 +39,6 @@ public class SecurityConfig {
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(converter))
                 )
-                // Додаємо обробник виходу
                 .logout(logout -> logout
                         .logoutSuccessHandler(logoutSuccessHandler)
                 );

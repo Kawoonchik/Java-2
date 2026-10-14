@@ -2,7 +2,6 @@ package com.java.lingvo.domain.mapper;
 
 import com.java.lingvo.domain.dto.DeckCardResponse;
 import com.java.lingvo.domain.dto.DeckResponse;
-import com.java.lingvo.domain.enums.OrderStatus;
 import com.java.lingvo.domain.model.Card;
 import com.java.lingvo.domain.model.Deck;
 import com.java.lingvo.domain.model.DeckCard;
@@ -12,8 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,60 +25,54 @@ class DeckMapperImplTest {
     @Autowired
     private DeckMapper deckMapper;
 
-    private Card product(int id, String name) {
+    private Card card(Long id, String term, String translation) {
         Card card = new Card();
         card.setId(id);
-        card.setName(name);
+        card.setTerm(term);
+        card.setTranslation(translation);
         return card;
     }
 
     @Test
-    void orderItemMapper_mapsProductFieldsAndComputesLineTotal() {
+    void deckCardMapper_mapsCardFields() {
         DeckCard item = new DeckCard();
-        item.setCard(product(1, "Brake Pad"));
-        item.setQuantity(3);
-        item.setUnitPrice(new BigDecimal("10.00"));
+        item.setId(10L);
+        item.setCard(card(1L, "語法", "граматика"));
 
         DeckCardResponse response = deckCardMapper.toResponse(item);
 
-        assertThat(response.getProductId()).isEqualTo(1);
-        assertThat(response.getProductName()).isEqualTo("Brake Pad");
-        assertThat(response.getQuantity()).isEqualTo(3);
-        assertThat(response.getUnitPrice()).isEqualByComparingTo("10.00");
-        assertThat(response.getLineTotal()).isEqualByComparingTo("30.00");
+        assertThat(response.getId()).isEqualTo(10L);
+        assertThat(response.getCardId()).isEqualTo(1L);
+        assertThat(response.getTerm()).isEqualTo("語法");
+        assertThat(response.getTranslation()).isEqualTo("граматика");
     }
 
     @Test
-    void orderMapper_mapsOrderWithNestedItemsList() {
+    void deckMapper_mapsDeckWithNestedItemsList() {
         Deck deck = new Deck();
-        deck.setId(5);
-        deck.setTotalPrice(new BigDecimal("50.00"));
-        deck.setStatus(OrderStatus.CONFIRMED);
-        deck.setCreatedAt(OffsetDateTime.parse("2026-01-01T10:00:00Z"));
+        deck.setId(5L);
+        deck.setTitle("Japanese Basics");
+        deck.setDescription("Basic vocabulary");
 
         DeckCard item = new DeckCard();
-        item.setCard(product(2, "Oil Filter"));
-        item.setQuantity(2);
-        item.setUnitPrice(new BigDecimal("25.00"));
-        deck.addItem(item);
+        item.setId(1L);
+        item.setCard(card(2L, "こんにちは", "Hello"));
+        item.setDeck(deck);
+        deck.getCards().add(item);
 
         DeckResponse response = deckMapper.toResponse(deck);
 
-        assertThat(response.getId()).isEqualTo(5);
-        assertThat(response.getTotalPrice()).isEqualByComparingTo("50.00");
-        assertThat(response.getStatus()).isEqualTo(OrderStatus.CONFIRMED);
+        assertThat(response.getId()).isEqualTo(5L);
+        assertThat(response.getTitle()).isEqualTo("Japanese Basics");
         assertThat(response.getItems()).hasSize(1);
-        assertThat(response.getItems().getFirst().getProductName()).isEqualTo("Oil Filter");
-        assertThat(response.getItems().getFirst().getLineTotal()).isEqualByComparingTo("50.00");
+        assertThat(response.getItems().get(0).getTerm()).isEqualTo("こんにちは");
     }
 
     @Test
-    void orderMapper_emptyItemsList_mapsToEmptyList() {
+    void deckMapper_emptyItemsList_mapsToEmptyList() {
         Deck deck = new Deck();
-        deck.setId(6);
-        deck.setTotalPrice(BigDecimal.ZERO);
-        deck.setStatus(OrderStatus.PLACED);
-        deck.setCreatedAt(OffsetDateTime.now());
+        deck.setId(6L);
+        deck.setTitle("Empty Deck");
 
         DeckResponse response = deckMapper.toResponse(deck);
 

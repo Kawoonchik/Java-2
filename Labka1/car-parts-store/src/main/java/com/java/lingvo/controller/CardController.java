@@ -1,5 +1,6 @@
 package com.java.lingvo.controller;
 
+import com.java.lingvo.annotation.AdminDeleteMapping;
 import com.java.lingvo.domain.dto.CardCreateRequest;
 import com.java.lingvo.domain.dto.CardResponse;
 import com.java.lingvo.domain.dto.CardUpdateRequest;
@@ -9,6 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import com.java.lingvo.annotation.InjectCurrentUser;
+import com.java.lingvo.security.CurrentUser;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 
@@ -41,10 +46,14 @@ public class CardController {
         return cardService.updateCard(id, request);
     }
 
-    @DeleteMapping("/{id}")
+    @AdminDeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable Long id) {
         cardService.deleteCard(id);
+    }
+
+    @GetMapping("/my-profile")
+    public String getMyProfile(@InjectCurrentUser CurrentUser user) {
+        return "Привіт! Твій внутрішній ID: " + user.username();
     }
 }

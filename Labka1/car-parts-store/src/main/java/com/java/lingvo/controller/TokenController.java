@@ -14,4 +14,6 @@ public class TokenController {
     public Map<String, String> token(@RegisteredOAuth2AuthorizedClient("keycloak") OAuth2AuthorizedClient client) {
         return Map.of("access_token", client.getAccessToken().getTokenValue());
     }
+
+
 }

@@ -23,63 +23,50 @@ class CardMapperImplTest {
     @Test
     void toResponse_mapsAllFields() {
         Card card = new Card();
-        card.setId(1);
-        card.setSku("BRK-PAD-001");
-        card.setName("Brake Pad");
-        card.setCategory("BRAKES");
-        card.setManufacturer("Bosch");
-        card.setCompatibleModel("Corolla");
-        card.setPrice(new BigDecimal("45.99"));
-        card.setStock(10);
+        card.setId(1L);
+        card.setTerm("Hola");
+        card.setTranslation("Hello");
+        card.setExampleSentence("Hola, ¿cómo estás?");
+        card.setLanguage("Spanish");
 
         CardResponse response = mapper.toResponse(card);
 
-        assertThat(response.getId()).isEqualTo(1);
-        assertThat(response.getSku()).isEqualTo("BRK-PAD-001");
-        assertThat(response.getName()).isEqualTo("Brake Pad");
-        assertThat(response.getCategory()).isEqualTo("BRAKES");
-        assertThat(response.getManufacturer()).isEqualTo("Bosch");
-        assertThat(response.getCompatibleModel()).isEqualTo("Corolla");
-        assertThat(response.getPrice()).isEqualByComparingTo("45.99");
-        assertThat(response.getStock()).isEqualTo(10);
+        assertThat(response.getId()).isEqualTo(1L);
+        assertThat(response.getTerm()).isEqualTo("Hola");
+        assertThat(response.getTranslation()).isEqualTo("Hello");
+        assertThat(response.getExampleSentence()).isEqualTo("Hola, ¿cómo estás?");
+        assertThat(response.getLanguage()).isEqualTo("Spanish");
     }
 
     @Test
     void toEntity_mapsCreateRequestFields() {
-        CardCreateRequest request = new CardCreateRequest(
-                "OIL-FLT-014", "Oil Filter", "ENGINE", "Mann-Filter",
-                "Golf", new BigDecimal("9.50"), 300);
+        CardCreateRequest request = new CardCreateRequest("Konnichiwa", "Hello", "Konnichiwa, genki?", "Japanese");
 
         Card entity = mapper.toEntity(request);
 
-        assertThat(entity.getSku()).isEqualTo("OIL-FLT-014");
-        assertThat(entity.getName()).isEqualTo("Oil Filter");
-        assertThat(entity.getPrice()).isEqualByComparingTo("9.50");
-        assertThat(entity.getStock()).isEqualTo(300);
+        assertThat(entity.getTerm()).isEqualTo("Konnichiwa");
+        assertThat(entity.getTranslation()).isEqualTo("Hello");
+        assertThat(entity.getExampleSentence()).isEqualTo("Konnichiwa, genki?");
+        assertThat(entity.getLanguage()).isEqualTo("Japanese");
         assertThat(entity.getId()).isNull();
     }
 
     @Test
-    void updateEntityFromRequest_overwritesMutableFields_leavesIdAndSkuAlone() {
+    void updateEntityFromRequest_overwritesMutableFields_leavesIdAlone() {
         Card existing = new Card();
-        existing.setId(7);
-        existing.setSku("SPK-PLG-007");
-        existing.setName("Old Name");
-        existing.setCategory("OLD");
-        existing.setManufacturer("Old Manu");
-        existing.setPrice(new BigDecimal("1.00"));
-        existing.setStock(1);
+        existing.setId(7L);
+        existing.setTerm("Old Term");
+        existing.setTranslation("Old Trans");
+        existing.setLanguage("Old Lang");
 
-        CardUpdateRequest request = new CardUpdateRequest(
-                "New Name", "NEW", "New Manu", "New Model", new BigDecimal("99.99"), 50);
+        CardUpdateRequest request = new CardUpdateRequest("New Term", "New Trans", "New Example", "New Lang");
 
-        mapper.updateEntityFromRequest(request, existing);
+        mapper.updateEntityFromDto(request, existing);
 
-        assertThat(existing.getId()).isEqualTo(7);
-        assertThat(existing.getSku()).isEqualTo("SPK-PLG-007");
-        assertThat(existing.getName()).isEqualTo("New Name");
-        assertThat(existing.getCategory()).isEqualTo("NEW");
-        assertThat(existing.getPrice()).isEqualByComparingTo("99.99");
-        assertThat(existing.getStock()).isEqualTo(50);
+        assertThat(existing.getId()).isEqualTo(7L);
+        assertThat(existing.getTerm()).isEqualTo("New Term");
+        assertThat(existing.getTranslation()).isEqualTo("New Trans");
+        assertThat(existing.getExampleSentence()).isEqualTo("New Example");
+        assertThat(existing.getLanguage()).isEqualTo("New Lang");
     }
 }

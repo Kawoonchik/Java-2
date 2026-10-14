@@ -2,7 +2,6 @@ package com.java.lingvo.service;
 
 import com.java.lingvo.domain.dto.CardCreateRequest;
 import com.java.lingvo.domain.dto.CardResponse;
-import com.java.lingvo.domain.dto.CardUpdateRequest;
 import com.java.lingvo.domain.mapper.CardMapper;
 import com.java.lingvo.domain.model.Card;
 import com.java.lingvo.exception.CardNotFoundException;
@@ -12,13 +11,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.math.BigDecimal;
 import java.util.List;
+import com.java.lingvo.domain.dto.CardUpdateRequest;
+
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,119 +31,127 @@ class CardServiceTest {
     @InjectMocks
     private CardService cardService;
 
-    private Card product(int id) {
+    @Test
+    void createCard_validRequest_savesAndReturnsCard() {
+        // Given (Arrange)
+        CardCreateRequest request = new CardCreateRequest();
+        request.setTerm("語法");
+        request.setTranslation("граматика");
+        request.setLanguage("Japanese");
+
         Card card = new Card();
-        card.setId(id);
-        card.setSku("SKU-" + id);
-        card.setName("Product " + id);
-        card.setCategory("ENGINE");
-        card.setManufacturer("Bosch");
-        card.setPrice(new BigDecimal("10.00"));
-        card.setStock(5);
-        return card;
+        Card savedCard = new Card();
+        CardResponse expectedResponse = new CardResponse();
+
+        when(cardMapper.toEntity(request)).thenReturn(card);
+        when(cardRepository.save(card)).thenReturn(savedCard);
+        when(cardMapper.toResponse(savedCard)).thenReturn(expectedResponse);
+
+        // When (Act)
+        CardResponse actualResponse = cardService.createCard(request);
+
+        // Then (Assert)
+        assertNotNull(actualResponse);
+        assertEquals(expectedResponse, actualResponse);
+
+        // Verify repository interaction
+        verify(cardRepository, times(1)).save(card);
     }
 
     @Test
-    void listAll_mapsEveryProduct() {
-        Card p1 = product(1);
-        Card p2 = product(2);
-        CardResponse r1 = new CardResponse();
-        CardResponse r2 = new CardResponse();
-        when(cardRepository.findAll()).thenReturn(List.of(p1, p2));
-        when(cardMapper.toResponse(p1)).thenReturn(r1);
-        when(cardMapper.toResponse(p2)).thenReturn(r2);
+    void getCard_nonExistingId_throwsCardNotFoundException() {
+        // Given (Arrange)
+        Long nonExistingId = 999L;
+        when(cardRepository.findById(nonExistingId)).thenReturn(Optional.empty());
 
-        List<CardResponse> result = cardService.listAll();
+        // When & Then (Act & Assert)
+        assertThrows(CardNotFoundException.class, () -> {
+            cardService.getCard(nonExistingId);
+        });
 
-        assertThat(result).containsExactly(r1, r2);
+        verify(cardRepository, times(1)).findById(nonExistingId);
     }
 
     @Test
-    void listAll_noProducts_returnsEmptyList() {
-        when(cardRepository.findAll()).thenReturn(List.of());
+    void getCard_existingId_returnsCardResponse() {
+        // Given (Arrange)
+        Long existingId = 1L;
+        Card card = new Card();
+        CardResponse expectedResponse = new CardResponse();
 
-        assertThat(cardService.listAll()).isEmpty();
+        when(cardRepository.findById(existingId)).thenReturn(Optional.of(card));
+        when(cardMapper.toResponse(card)).thenReturn(expectedResponse);
+
+        // When (Act)
+        CardResponse actualResponse = cardService.getCard(existingId);
+
+        // Then (Assert)
+        assertNotNull(actualResponse);
+        assertEquals(expectedResponse, actualResponse);
+        verify(cardRepository, times(1)).findById(existingId);
     }
 
     @Test
-    void getById_productExists_returnsMappedResponse() {
-        Card card = product(1);
+    void getAllCards_returnsListOfCardResponses() {
+        // Given (Arrange)
+        Card card = new Card();
         CardResponse response = new CardResponse();
-        when(cardRepository.findById(1)).thenReturn(Optional.of(card));
+
+        when(cardRepository.findAll()).thenReturn(List.of(card));
         when(cardMapper.toResponse(card)).thenReturn(response);
 
-        assertThat(cardService.getById(1)).isSameAs(response);
+        // When (Act)
+        List<CardResponse> actualResponses = cardService.getAllCards();
+
+        // Then (Assert)
+        assertFalse(actualResponses.isEmpty());
+        assertEquals(1, actualResponses.size());
+        verify(cardRepository, times(1)).findAll();
     }
 
     @Test
-    void getById_productMissing_throwsProductNotFoundException() {
-        when(cardRepository.findById(404)).thenReturn(Optional.empty());
+    void updateCard_existingId_updatesAndReturnsCard() {
+        // Given (Arrange)
+        Long existingId = 1L;
+        CardUpdateRequest request = new CardUpdateRequest();
+        Card existingCard = new Card();
+        Card updatedCard = new Card();
+        CardResponse expectedResponse = new CardResponse();
 
-        assertThatThrownBy(() -> cardService.getById(404))
-                .isInstanceOf(CardNotFoundException.class)
-                .hasMessageContaining("404");
+        when(cardRepository.findById(existingId)).thenReturn(Optional.of(existingCard));
+        when(cardRepository.save(existingCard)).thenReturn(updatedCard);
+        when(cardMapper.toResponse(updatedCard)).thenReturn(expectedResponse);
+
+        // When (Act)
+        CardResponse actualResponse = cardService.updateCard(existingId, request);
+
+        // Then (Assert)
+        assertNotNull(actualResponse);
+        assertEquals(expectedResponse, actualResponse);
+        verify(cardRepository, times(1)).save(existingCard);
     }
 
     @Test
-    void create_mapsRequestToEntityAndSaves() {
-        CardCreateRequest request = new CardCreateRequest(
-                "SKU-9", "New Part", "ENGINE", "Bosch", null, new BigDecimal("12.00"), 10);
-        Card entity = product(9);
-        Card saved = product(9);
-        CardResponse response = new CardResponse();
-        when(cardMapper.toEntity(request)).thenReturn(entity);
-        when(cardRepository.save(entity)).thenReturn(saved);
-        when(cardMapper.toResponse(saved)).thenReturn(response);
+    void deleteCard_existingId_deletesCard() {
+        // Given (Arrange)
+        Long existingId = 1L;
+        when(cardRepository.existsById(existingId)).thenReturn(true);
 
-        assertThat(cardService.create(request)).isSameAs(response);
-        verify(cardRepository).save(entity);
+        // When (Act)
+        cardService.deleteCard(existingId);
+
+        // Then (Assert)
+        verify(cardRepository, times(1)).deleteById(existingId);
     }
 
     @Test
-    void update_productExists_appliesChangesAndSaves() {
-        Card existing = product(1);
-        CardUpdateRequest request = new CardUpdateRequest(
-                "Updated Name", "BRAKES", "NGK", "Honda Civic", new BigDecimal("20.00"), 3);
-        CardResponse response = new CardResponse();
-        when(cardRepository.findById(1)).thenReturn(Optional.of(existing));
-        when(cardRepository.save(existing)).thenReturn(existing);
-        when(cardMapper.toResponse(existing)).thenReturn(response);
+    void deleteCard_nonExistingId_throwsCardNotFoundException() {
+        // Given
+        Long nonExistingId = 999L;
+        when(cardRepository.existsById(nonExistingId)).thenReturn(false);
 
-        CardResponse result = cardService.update(1, request);
-
-        verify(cardMapper).updateEntityFromRequest(request, existing);
-        assertThat(result).isSameAs(response);
-    }
-
-    @Test
-    void update_productMissing_throwsProductNotFoundException_beforeTouchingMapper() {
-        when(cardRepository.findById(404)).thenReturn(Optional.empty());
-
-        CardUpdateRequest request = new CardUpdateRequest(
-                "Name", "CAT", "Manu", null, new BigDecimal("1.00"), 1);
-
-        assertThatThrownBy(() -> cardService.update(404, request))
-                .isInstanceOf(CardNotFoundException.class);
-
-        verifyNoInteractions(cardMapper);
-    }
-
-    @Test
-    void delete_productExists_deletesById() {
-        when(cardRepository.existsById(1)).thenReturn(true);
-
-        cardService.delete(1);
-
-        verify(cardRepository).deleteById(1);
-    }
-
-    @Test
-    void delete_productMissing_throwsProductNotFoundException_andNeverCallsDelete() {
-        when(cardRepository.existsById(404)).thenReturn(false);
-
-        assertThatThrownBy(() -> cardService.delete(404))
-                .isInstanceOf(CardNotFoundException.class);
-
-        verify(cardRepository, never()).deleteById(any());
+        // When & Then
+        assertThrows(CardNotFoundException.class, () -> cardService.deleteCard(nonExistingId));
+        verify(cardRepository, never()).deleteById(anyLong());
     }
 }

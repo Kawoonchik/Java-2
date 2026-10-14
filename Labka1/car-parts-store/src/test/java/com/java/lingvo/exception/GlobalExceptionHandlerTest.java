@@ -34,34 +34,22 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    void handlesProductNotFoundException_asNotFound() {
+    void handlesCardNotFoundException_asNotFound() {
         ResponseEntity<ApplicationErrorResponse> response =
-                handler.handle(new CardNotFoundException(42));
+                handler.handle(new CardNotFoundException(42L));
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals("Product not found: 42", response.getBody().getMessage());
+        assertEquals("Card not found: 42", response.getBody().getMessage());
     }
 
     @Test
-    void handlesOrderNotFoundException_asNotFound() {
+    void handlesDeckNotFoundException_asNotFound() {
         ResponseEntity<ApplicationErrorResponse> response =
-                handler.handle(new DeckNotFoundException(7));
+                handler.handle(new DeckNotFoundException(7L));
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals("Order not found: 7", response.getBody().getMessage());
-    }
-
-    @Test
-    void handlesInsufficientStockException_asNotFound() {
-        ResponseEntity<ApplicationErrorResponse> response =
-                handler.handle(new InsufficientStockException(1, 5, 2));
-
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertThat(response.getBody().getMessage())
-                .contains("requested 5")
-                .contains("available 2");
+        assertEquals("Deck not found: 7", response.getBody().getMessage());
     }
 }

@@ -42,49 +42,49 @@ class CardPublicEndpointsWebMvcTest {
     private CardService cardService;
 
     @Test
-    void getProducts_returnsJsonArray() throws Exception {
+    void getCards_returnsJsonArray() throws Exception {
         CardResponse response = new CardResponse();
-        response.setId(1);
-        response.setName("Brake Pad");
-        response.setPrice(new BigDecimal("45.99"));
-        when(cardService.listAll()).thenReturn(List.of(response));
+        response.setId(1L);
+        response.setTerm("Brake Pad");
+        response.setTranslation("Гальмівна колодка");
+        when(cardService.getAllCards()).thenReturn(List.of(response));
 
-        mockMvc.perform(get("/api/products"))
+        mockMvc.perform(get("/api/cards"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].name").value("Brake Pad"))
-                .andExpect(jsonPath("$[0].price").value(45.99));
+                .andExpect(jsonPath("$[0].term").value("Brake Pad"))
+                .andExpect(jsonPath("$[0].translation").value("Гальмівна колодка"));
     }
 
     @Test
-    void getProductById_notFound_returns404WithErrorBody() throws Exception {
-        when(cardService.getById(404)).thenThrow(new CardNotFoundException(404));
+    void getCardById_notFound_returns404WithErrorBody() throws Exception {
+        when(cardService.getCard(404L)).thenThrow(new CardNotFoundException(404L));
 
-        mockMvc.perform(get("/api/products/{id}", 404))
+        mockMvc.perform(get("/api/cards/{id}", 404))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("Product not found: 404"));
+                .andExpect(jsonPath("$.message").value("Card not found: 404"));
     }
 
     @Test
-    void createProduct_missingRequiredFields_returns400_serviceNeverCalled() throws Exception {
+    void createCard_missingRequiredFields_returns400_serviceNeverCalled() throws Exception {
         CardCreateRequest invalid = new CardCreateRequest(
-                "", "", "", "", null, null, 0);
+                "", "", "", "");
 
-        mockMvc.perform(post("/api/products")
+        mockMvc.perform(post("/api/cards")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(invalid)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    void createProduct_validRequest_returns201() throws Exception {
+    void createCard_validRequest_returns201() throws Exception {
         CardCreateRequest valid = new CardCreateRequest(
-                "SKU-1", "New Part", "ENGINE", "Bosch", null, new BigDecimal("10.00"), 5);
+                "Term", "Translation", "Example", "English");
         CardResponse response = new CardResponse();
-        response.setId(1);
-        when(cardService.create(any(CardCreateRequest.class))).thenReturn(response);
+        response.setId(1L);
+        when(cardService.createCard(any(CardCreateRequest.class))).thenReturn(response);
 
-        mockMvc.perform(post("/api/products")
+        mockMvc.perform(post("/api/cards")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(valid)))
                 .andExpect(status().isCreated());
