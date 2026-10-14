@@ -59,6 +59,51 @@ Authorization: Bearer {{admin_token}}
 
 
 
+
+
+
+### ===================================================================
+### Лабораторна 5: Асинхронність
+### ===================================================================
+
+### 1. Fire-and-forget (Успішний) - Повертає відповідь миттєво
+GET http://localhost:8081/api/async-demo/notify?id=1
+Authorization: Bearer {{admin_token}}
+
+### 2. Fire-and-forget (Помилка) - Перевірка глобального обробника (дивись консоль)
+GET http://localhost:8081/api/async-demo/notify?id=-1
+Authorization: Bearer {{admin_token}}
+
+### 3. Паралельне виконання - Має зайняти ~1.5 сек (а не 3 сек)
+GET http://localhost:8081/api/async-demo/enrich?word=apple
+Authorization: Bearer {{admin_token}}
+
+### 4. Обробка винятків у Future - Не падає з 500, повертає fallback текст
+GET http://localhost:8081/api/async-demo/enrich?word=error
+Authorization: Bearer {{admin_token}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###
+
 POST http://localhost:8080/realms/course-realm/protocol/openid-connect/token
 Content-Type: application/x-www-form-urlencoded
 
