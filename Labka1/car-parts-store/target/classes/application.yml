@@ -4,6 +4,10 @@ server:
 spring:
   application:
     name: car-parts-store
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: never
 
   security:
     oauth2:
@@ -46,3 +50,5 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/changelog-master.xml
+
+

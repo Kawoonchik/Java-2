@@ -23,15 +23,14 @@ public class AsyncConfig implements AsyncConfigurer {
 
         executor.setThreadNamePrefix("lingvo-async-");
 
-        // ОБРОБКА ПЕРЕПОВНЕННЯ: Замість помилки 500 (TaskRejectedException),
-        // надлишкові задачі будуть виконуватися в потоці, який їх викликав (CallerRunsPolicy).
+
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
 
         executor.initialize();
         return executor;
     }
 
-    // Глобальний обробник помилок для методів типу "запустив і забув" (void)
+
     @Override
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
         return (ex, method, params) -> {
