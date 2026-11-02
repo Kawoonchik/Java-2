@@ -1,0 +1,15 @@
+D:\Musor_2\Java\Labka1\car-parts-store\common\src\main\java\com\java\lingvo\domain\dto\CardCreateRequest.java
+D:\Musor_2\Java\Labka1\car-parts-store\common\src\main\java\com\java\lingvo\domain\dto\CardResponse.java
+D:\Musor_2\Java\Labka1\car-parts-store\common\src\main\java\com\java\lingvo\domain\dto\CardUpdateRequest.java
+D:\Musor_2\Java\Labka1\car-parts-store\common\src\main\java\com\java\lingvo\domain\dto\CreateDeckRequest.java
+D:\Musor_2\Java\Labka1\car-parts-store\common\src\main\java\com\java\lingvo\domain\dto\DeckCardRequest.java
+D:\Musor_2\Java\Labka1\car-parts-store\common\src\main\java\com\java\lingvo\domain\dto\DeckCardResponse.java
+D:\Musor_2\Java\Labka1\car-parts-store\common\src\main\java\com\java\lingvo\domain\dto\DeckResponse.java
+D:\Musor_2\Java\Labka1\car-parts-store\common\src\main\java\com\java\lingvo\domain\mapper\CardMapper.java
+D:\Musor_2\Java\Labka1\car-parts-store\common\src\main\java\com\java\lingvo\domain\mapper\DeckCardMapper.java
+D:\Musor_2\Java\Labka1\car-parts-store\common\src\main\java\com\java\lingvo\domain\mapper\DeckMapper.java
+D:\Musor_2\Java\Labka1\car-parts-store\common\src\main\java\com\java\lingvo\domain\model\Card.java
+D:\Musor_2\Java\Labka1\car-parts-store\common\src\main\java\com\java\lingvo\domain\model\Deck.java
+D:\Musor_2\Java\Labka1\car-parts-store\common\src\main\java\com\java\lingvo\domain\model\DeckCard.java
+D:\Musor_2\Java\Labka1\car-parts-store\common\src\main\java\com\java\lingvo\validation\ValidFlashcard.java
+D:\Musor_2\Java\Labka1\car-parts-store\common\src\main\java\com\java\lingvo\validation\ValidFlashcardValidator.java
