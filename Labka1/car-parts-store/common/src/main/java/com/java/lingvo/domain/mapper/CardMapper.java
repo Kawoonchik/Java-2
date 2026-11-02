@@ -6,12 +6,17 @@ import com.java.lingvo.domain.dto.CardUpdateRequest;
 import com.java.lingvo.domain.model.Card;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(componentModel = "spring")
 public interface CardMapper {
+    @Mapping(target = "id", ignore = true)
     Card toEntity(CardCreateRequest request);
+
+    @Mapping(target = "id", ignore = true)
     void updateEntityFromDto(CardUpdateRequest request, @MappingTarget Card card);
+    
     CardResponse toResponse(Card card);
 }
