@@ -1,0 +1,34 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+  liquibase:
+    enabled: false
+  docker:
+    compose:
+      enabled: false
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://dummy/certs
+      client:
+        registration:
+          keycloak:
+            client-id: backend-app
+            client-secret: dummy
+            authorization-grant-type: authorization_code
+            provider: keycloak-dummy
+        provider:
+          keycloak-dummy:
+            authorization-uri: http://dummy/auth
+            token-uri: http://dummy/token
+            jwk-set-uri: http://dummy/certs
+            user-info-uri: http://dummy/userinfo

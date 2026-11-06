@@ -9,6 +9,12 @@ spring:
     jdbc:
       initialize-schema: never
 
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: 5672
+    username: guest
+    password: guest
+
   security:
     oauth2:
       resourceserver:
@@ -33,7 +39,7 @@ spring:
       lifecycle-management: start-and-stop
 
   datasource:
-    url: jdbc:mariadb://localhost:3306/car_parts_store?allowPublicKeyRetrieval=true&useSSL=false
+    url: jdbc:mariadb://localhost:3307/car_parts_store?allowPublicKeyRetrieval=true&useSSL=false
     username: appuser
     password: appuser
     driver-class-name: org.mariadb.jdbc.Driver

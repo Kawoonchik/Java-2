@@ -9,6 +9,12 @@ spring:
     jdbc:
       initialize-schema: never
 
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: 5672
+    username: guest
+    password: guest
+
   security:
     oauth2:
       resourceserver:
